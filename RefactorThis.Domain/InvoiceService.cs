@@ -43,67 +43,54 @@ namespace RefactorThis.Domain
 
 			// We know the invoice is valid, now we can process the payment.
 
-
+			// If the invoice has existing payments, check if the payment is a partial payment or the final payment.
 			if (inv.Payments != null && inv.Payments.Any())
 			{
 				if (inv.Payments.Sum(x => x.Amount) != 0 && inv.Amount == inv.Payments.Sum(x => x.Amount))
 				{
 					return "invoice was already fully paid";
 				}
-				else if (inv.Payments.Sum(x => x.Amount) != 0 && payment.Amount > (inv.Amount - inv.AmountPaid))
+				if (inv.Payments.Sum(x => x.Amount) != 0 && payment.Amount > (inv.Amount - inv.AmountPaid))
 				{
 					return "the payment is greater than the partial amount remaining";
 				}
-				else
+
+				// Assume that the payment is a partial payment, change the message if it is the final payment.
+				var partialPaymentMessage = "another partial payment received, still not fully paid";
+				if ((inv.Amount - inv.AmountPaid) == payment.Amount)
 				{
-					if ((inv.Amount - inv.AmountPaid) == payment.Amount)
-					{
-						inv.AmountPaid += payment.Amount;
-						if (inv.Type == InvoiceType.Commercial)
-						{
-							inv.TaxAmount += payment.Amount * 0.14m;
-						}
-						inv.Payments.Add(payment);
-						inv.Save();
-						return "final partial payment received, invoice is now fully paid"; // Need to test for both cases?
-					}
-					else
-					{
-						inv.AmountPaid += payment.Amount;
-						if (inv.Type == InvoiceType.Commercial)
-						{
-							inv.TaxAmount += payment.Amount * 0.14m;
-						}
-						inv.Payments.Add(payment);
-						inv.Save();
-						return "another partial payment received, still not fully paid"; // Need to test for both cases?
-					}
+					partialPaymentMessage = "final partial payment received, invoice is now fully paid";
 				}
+
+				inv.AmountPaid += payment.Amount;
+				if (inv.Type == InvoiceType.Commercial)
+				{
+					inv.TaxAmount += payment.Amount * 0.14m;
+				}
+				inv.Payments.Add(payment);
+				inv.Save();
+				return partialPaymentMessage;
 			}
-			else
+
+			// If the invoice has no existing payments, check if the payment is more then the invoice amount.
+			// Don't save the invoice, processing up the chain somewhere will have to reject this payment.
+			if (payment.Amount > inv.Amount)
 			{
-				if (payment.Amount > inv.Amount)
-				{
-					return "the payment is greater than the invoice amount";
-				}
-				else if (inv.Amount == payment.Amount)
-				{
-					inv.AmountPaid = payment.Amount;
-					inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
-					inv.Payments.Add(payment);
-					inv.Save();
-					return "invoice is now fully paid"; // Need to test for both cases?
-					
-				}
-				else
-				{
-					inv.AmountPaid = payment.Amount;
-					inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
-					inv.Payments.Add(payment);
-					inv.Save();
-					return "invoice is now partially paid"; // Need to test for both cases?
-				}
+				return "the payment is greater than the invoice amount";
 			}
+
+			// If the invoice has no existing payments, check if the payment is the final payment.
+			var fullPaymentMessage = "invoice is now partially paid";
+			if (inv.Amount == payment.Amount)
+			{
+				fullPaymentMessage = "invoice is now fully paid";
+			}
+			
+			inv.AmountPaid = payment.Amount;
+			inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
+			inv.Payments.Add(payment);
+			inv.Save();
+			return fullPaymentMessage;
 		}
 	}
 }
