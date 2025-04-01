@@ -8,12 +8,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7971BDEC-EAD1-4FB8-A4F5-B1F67E4F6355}</ProjectGuid>
+    <ProjectGuid>{C7675F1C-EA62-44F3-9A7A-39316427C0A9}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RefactorThis.Domain.Tests</RootNamespace>
-    <AssemblyName>RefactorThis.Domain.Tests</AssemblyName>
+    <RootNamespace>RefactorThis.Persistence.Tests</RootNamespace>
+    <AssemblyName>RefactorThis.Persistence.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -102,15 +102,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InvoicePaymentProcessorTests.cs" />
+    <Compile Include="InvoiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestInvoiceRepository.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RefactorThis.Domain\RefactorThis.Domain.csproj">
-      <Project>{5310b2fe-e26d-414e-b656-1f74c5a70368}</Project>
-      <Name>RefactorThis.Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RefactorThis.Persistence\RefactorThis.Persistence.csproj">
       <Project>{33cdc796-ff75-449c-9637-59c2efc46361}</Project>
       <Name>RefactorThis.Persistence</Name>
