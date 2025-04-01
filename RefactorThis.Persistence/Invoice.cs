@@ -5,7 +5,7 @@ namespace RefactorThis.Persistence
 {
 	public class Invoice
 	{
-		// This should be configured against each invoice encase the tax rate changes.
+		// This should be configured against each invoice in case the tax rate changes.
 		public decimal TaxRate = 0.14m;
 		public string Reference { get; set; }
 		public decimal Amount { get; set; }
