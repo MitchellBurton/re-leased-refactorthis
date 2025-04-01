@@ -6,15 +6,25 @@ namespace RefactorThis.Domain
 {
 	public class InvoiceService
 	{
-		private readonly InvoiceRepository _invoiceRepository;
+		private readonly IInvoiceRepository _invoiceRepository;
 
-		public InvoiceService(InvoiceRepository invoiceRepository)
+		public InvoiceService(IInvoiceRepository invoiceRepository)
 		{
 			_invoiceRepository = invoiceRepository;
 		}
 
 		public string ProcessPayment(Payment payment)
 		{
+			// Check the payment is in a valid state.
+			if (payment.Amount <= 0)
+			{
+				throw new InvalidOperationException("The payment amount must be greater than 0");
+			}
+			if (string.IsNullOrWhiteSpace(payment.Reference))
+			{
+				throw new InvalidOperationException("The payment reference must be provided");
+			}
+
 			var inv = _invoiceRepository.GetInvoice(payment.Reference);
 
 			// Check if the invoice is in a valid state.

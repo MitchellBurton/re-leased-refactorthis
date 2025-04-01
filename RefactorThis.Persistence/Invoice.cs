@@ -5,6 +5,7 @@ namespace RefactorThis.Persistence
 {
 	public class Invoice
 	{
+		public string Reference { get; set; }
 		public decimal Amount { get; set; }
 		private readonly decimal amountPaid;
 
