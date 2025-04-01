@@ -42,18 +42,17 @@ namespace RefactorThis.Domain
 
 
 			// We know the invoice is valid, now we can process the payment.
-			var responseMessage = string.Empty;
 
 
 			if (inv.Payments != null && inv.Payments.Any())
 			{
 				if (inv.Payments.Sum(x => x.Amount) != 0 && inv.Amount == inv.Payments.Sum(x => x.Amount))
 				{
-					responseMessage = "invoice was already fully paid";
+					return "invoice was already fully paid";
 				}
 				else if (inv.Payments.Sum(x => x.Amount) != 0 && payment.Amount > (inv.Amount - inv.AmountPaid))
 				{
-					responseMessage = "the payment is greater than the partial amount remaining";
+					return "the payment is greater than the partial amount remaining";
 				}
 				else
 				{
@@ -65,7 +64,8 @@ namespace RefactorThis.Domain
 							inv.TaxAmount += payment.Amount * 0.14m;
 						}
 						inv.Payments.Add(payment);
-						responseMessage = "final partial payment received, invoice is now fully paid"; // Need to test for both cases?
+						inv.Save();
+						return "final partial payment received, invoice is now fully paid"; // Need to test for both cases?
 					}
 					else
 					{
@@ -75,7 +75,8 @@ namespace RefactorThis.Domain
 							inv.TaxAmount += payment.Amount * 0.14m;
 						}
 						inv.Payments.Add(payment);
-						responseMessage = "another partial payment received, still not fully paid"; // Need to test for both cases?
+						inv.Save();
+						return "another partial payment received, still not fully paid"; // Need to test for both cases?
 					}
 				}
 			}
@@ -83,14 +84,15 @@ namespace RefactorThis.Domain
 			{
 				if (payment.Amount > inv.Amount)
 				{
-					responseMessage = "the payment is greater than the invoice amount";
+					return "the payment is greater than the invoice amount";
 				}
 				else if (inv.Amount == payment.Amount)
 				{
 					inv.AmountPaid = payment.Amount;
 					inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
 					inv.Payments.Add(payment);
-					responseMessage = "invoice is now fully paid"; // Need to test for both cases?
+					inv.Save();
+					return "invoice is now fully paid"; // Need to test for both cases?
 					
 				}
 				else
@@ -98,12 +100,10 @@ namespace RefactorThis.Domain
 					inv.AmountPaid = payment.Amount;
 					inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
 					inv.Payments.Add(payment);
-					responseMessage = "invoice is now partially paid"; // Need to test for both cases?
+					inv.Save();
+					return "invoice is now partially paid"; // Need to test for both cases?
 				}
 			}
-
-			inv.Save();
-			return responseMessage;
 		}
 	}
 }
