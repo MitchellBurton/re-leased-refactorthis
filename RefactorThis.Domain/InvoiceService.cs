@@ -50,19 +50,18 @@ namespace RefactorThis.Domain
 				{
 					return "invoice was already fully paid";
 				}
-				if (inv.Payments.Sum(x => x.Amount) != 0 && payment.Amount > (inv.Amount - inv.AmountPaid))
+				if (inv.Payments.Sum(x => x.Amount) != 0 && payment.Amount > (inv.Amount - inv.GetAmountPaid()))
 				{
 					return "the payment is greater than the partial amount remaining";
 				}
 
 				// Assume that the payment is a partial payment, change the message if it is the final payment.
 				var partialPaymentMessage = "another partial payment received, still not fully paid";
-				if ((inv.Amount - inv.AmountPaid) == payment.Amount)
+				if ((inv.Amount - inv.GetAmountPaid()) == payment.Amount)
 				{
 					partialPaymentMessage = "final partial payment received, invoice is now fully paid";
 				}
 
-				inv.AmountPaid += payment.Amount;
 				if (inv.Type == InvoiceType.Commercial)
 				{
 					inv.TaxAmount += payment.Amount * 0.14m;
@@ -86,7 +85,6 @@ namespace RefactorThis.Domain
 				fullPaymentMessage = "invoice is now fully paid";
 			}
 			
-			inv.AmountPaid = payment.Amount;
 			inv.TaxAmount = payment.Amount * 0.14m;
 			inv.Payments.Add(payment);
 			_invoiceRepository.SaveInvoice(inv);

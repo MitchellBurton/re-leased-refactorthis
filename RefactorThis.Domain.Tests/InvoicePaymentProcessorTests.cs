@@ -39,7 +39,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 0,
-				AmountPaid = 0,
 				Payments = null
 			};
 
@@ -62,7 +61,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 10,
 				Payments = new List<Payment>
 				{
 					new Payment
@@ -89,7 +87,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 5,
 				Payments = new List<Payment>
 				{
 					new Payment
@@ -119,7 +116,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 5,
-				AmountPaid = 0,
 				Payments = new List<Payment>( )
 			};
 			repo.Add( invoice );
@@ -143,7 +139,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 5,
 				Payments = new List<Payment>
 				{
 					new Payment
@@ -169,11 +164,13 @@ namespace RefactorThis.Domain.Tests
 		[Test]
 		public void ProcessPayment_Should_ReturnFullyPaidMessage_When_NoPartialPaymentExistsAndAmountPaidEqualsInvoiceAmount( )
 		{
+
+			// Problem.
 			var repo = new InvoiceRepository( );
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 0,
+				//AmountPaid = 0,
 				Payments = new List<Payment>( ) { new Payment( ) { Amount = 10 } }
 			};
 			repo.Add( invoice );
@@ -197,7 +194,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 5,
 				Payments = new List<Payment>
 				{
 					new Payment
@@ -227,7 +223,6 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice( )
 			{
 				Amount = 10,
-				AmountPaid = 0,
 				Payments = new List<Payment>( )
 			};
 			repo.Add( invoice );
