@@ -68,7 +68,7 @@ namespace RefactorThis.Domain
 					inv.TaxAmount += payment.Amount * 0.14m;
 				}
 				inv.Payments.Add(payment);
-				inv.Save();
+				_invoiceRepository.SaveInvoice(inv);
 				return partialPaymentMessage;
 			}
 
@@ -87,9 +87,9 @@ namespace RefactorThis.Domain
 			}
 			
 			inv.AmountPaid = payment.Amount;
-			inv.TaxAmount = payment.Amount * 0.14m; // Tax shouldn't be added for both types?
+			inv.TaxAmount = payment.Amount * 0.14m;
 			inv.Payments.Add(payment);
-			inv.Save();
+			_invoiceRepository.SaveInvoice(inv);
 			return fullPaymentMessage;
 		}
 	}
