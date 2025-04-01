@@ -291,6 +291,7 @@ namespace RefactorThis.Domain.Tests
 			var result = paymentProcessor.ProcessPayment(payment);
 
 			Assert.AreEqual("another partial payment received, still not fully paid", result);
+			Assert.AreEqual(6, invoice.GetAmountPaid()); // Check that the payment was applied to the invoice.
 		}
 
 		[Test]
@@ -316,6 +317,39 @@ namespace RefactorThis.Domain.Tests
 			var result = paymentProcessor.ProcessPayment(payment);
 
 			Assert.AreEqual("invoice is now partially paid", result);
+			Assert.AreEqual(1, invoice.GetAmountPaid()); // Check that the payment was applied to the invoice.
+		}
+
+		[Test]
+		public void ProcessPayment_Should_ApplyPaymentToTheCorrectInvoice()
+		{
+			var repo = new TestInvoiceRepository();
+			repo.Add(new Invoice()
+			{
+				Reference = "123",
+				Amount = 10,
+				Payments = new List<Payment>()
+			});
+			repo.Add(new Invoice()
+			{
+				Reference = "ABC",
+				Amount = 10,
+				Payments = new List<Payment>()
+			});
+
+			var paymentProcessor = new InvoiceService(repo);
+
+			var payment = new Payment()
+			{
+				Reference = "123",
+				Amount = 1
+			};
+
+			var result = paymentProcessor.ProcessPayment(payment);
+
+			Assert.AreEqual("invoice is now partially paid", result);
+			Assert.AreEqual(1, repo.GetInvoice("123").GetAmountPaid());
+			Assert.AreEqual(0, repo.GetInvoice("ABC").GetAmountPaid());
 		}
 	}
 }
