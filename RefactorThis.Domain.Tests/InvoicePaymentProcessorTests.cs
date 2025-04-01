@@ -9,7 +9,7 @@ namespace RefactorThis.Domain.Tests
 	public class InvoicePaymentProcessorTests
 	{
 		[Test]
-		public void ProcessPayment_Should_ThrowException_When_NoInoiceFoundForPaymentReference()
+		public void ProcessPayment_Should_ThrowException_When_NoInoviceFoundForPaymentReference()
 		{
 			var repo = new TestInvoiceRepository();
 			var paymentProcessor = new InvoiceService(repo);
@@ -27,6 +27,37 @@ namespace RefactorThis.Domain.Tests
 			}
 
 			Assert.AreEqual("There is no invoice matching this payment", failureMessage);
+		}
+
+		[Test]
+		public void ProcessPayment_Should_ThrowException_When_PaymentDoesNotHaveAReference()
+		{
+
+			var repo = new TestInvoiceRepository();
+
+			var invoice = new Invoice()
+			{
+				Reference = "123",
+				Amount = 10,
+				Payments = null
+			};
+
+			repo.Add(invoice);
+
+			var paymentProcessor = new InvoiceService(repo);
+
+			var payment = new Payment() { Amount = 1 };
+			var failureMessage = "";
+			try
+			{
+				var result = paymentProcessor.ProcessPayment(payment);
+			}
+			catch (InvalidOperationException e)
+			{
+				failureMessage = e.Message;
+			}
+
+			Assert.AreEqual("The payment reference must be provided", failureMessage);
 		}
 
 		[Test]
@@ -61,7 +92,7 @@ namespace RefactorThis.Domain.Tests
 			var invoice = new Invoice()
 			{
 				Reference = "123",
-				Amount = 0,
+				Amount = 10,
 				Payments = null
 			};
 
@@ -82,7 +113,7 @@ namespace RefactorThis.Domain.Tests
 			}
 
 			Assert.AreEqual("The payment amount must be greater than 0", failureMessage);
-			//Assert.AreEqual(0, invoice.GetAmountPaid()); // Check that the payment was not applied to the invoice.
+			Assert.AreEqual(0, invoice.GetAmountPaid()); // Check that the payment was not applied to the invoice.
 		}
 
 		[Test]
